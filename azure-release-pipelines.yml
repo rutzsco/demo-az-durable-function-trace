@@ -3,7 +3,7 @@ trigger: none
 resources:
   pipelines:
   - pipeline: build
-    source: 'Measurement Insights - Build'
+    source: 'demo-az-durable-function-trace - BUILD'
   
 variables:
   vmImageName: 'vs2017-win2016'
