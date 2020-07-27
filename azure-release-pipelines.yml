@@ -13,10 +13,10 @@ stages:
  - stage: CI
    displayName: CI stage 
    variables:
-     app-name: 'remote-monitor-topology-ci'
-     storageAccountName: 'azfuncrmmisci'
+     app-name: 'demo-az-durable-function-trace'
+     storageAccountName: 'azfuncddftci'
      region: 'Central US'
-     resourceGroupName: 'remote-monitor-ci'  
+     resourceGroupName: 'demo-az-durable-function-trace'  
    jobs:
    - deployment: Deploy
      displayName: Deploy
@@ -40,43 +40,10 @@ stages:
                 overrideParameters: '-appName $(app-name) -storageAccountName $(storageAccountName)'
                 deploymentOutputs: ResourceGroupDeploymentOutputs
 
-            - task: PowerShell@2
-              displayName: '2. Capture Outputs'
-              inputs:
-                  targetType: 'inline'
-                  script: |
-                    Write-Output "processing  outputs"
-                                  $outputs = ConvertFrom-Json $($env:ResourceGroupDeploymentOutputs)
-                                  foreach ($output in $outputs.PSObject.Properties) {
-                                    Write-Host "##vso[task.setvariable variable=Local_$($output.Name)]$($output.Value.value)"
-                                  }
-
-            - task: AzurePowerShell@4
-              displayName: '3. Function - MeasurementInsightServiceKey in Key Vault'
-              inputs:
-                azureSubscription: '$(azureSubscription)'
-                ScriptType: InlineScript
-                Inline: |
-                 $Secret = ConvertTo-SecureString -String $($env:Local_functionKey) -AsPlainText -Force
-                 Set-AzKeyVaultSecret -VaultName 'remote-monitor-kv-ci' -Name 'MeasurementInsightServiceKey' -SecretValue $Secret
-                
-                azurePowerShellVersion: LatestVersion
-
-            - task: AzurePowerShell@4
-              displayName: '4. Function - Give Identity Access to KeyVault'
-              inputs:
-                azureSubscription: '$(azureSubscription)'
-                ScriptType: InlineScript
-                Inline: |
-                  Set-AzKeyVaultAccessPolicy -VaultName remote-monitor-kv-ci -ObjectId $(Local_miObjectId) -PermissionsToKeys get,list -PermissionsToSecrets get,list -BypassObjectIdValidation
-                   
-                azurePowerShellVersion: LatestVersion
-
             - task: AzureFunctionApp@1
               displayName: '5. Azure functions app deploy'
               inputs:
                 azureSubscription: '$(azureSubscription)'
                 appType: functionApp
                 appName: $(app-name)
-                package: '$(Pipeline.Workspace)/build/App/RemoteMonitor.Services.Insights.zip'
-                AppSettings: '-CosmosDBConnection @Microsoft.KeyVault(VaultName=remote-monitor-kv-ci;SecretName=CosmosDBConnectionString;SecretVersion=)'
+                package: '$(Pipeline.Workspace)/build/App/demo-az-durable-functions.zip'
