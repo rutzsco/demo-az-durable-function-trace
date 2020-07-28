@@ -24,9 +24,11 @@ namespace demo_az_durable_functions
         }
 
         [FunctionName("HelloActivity")]
-        public string SayHello([ActivityTrigger] string name, ILogger log)
+        public string SayHello([ActivityTrigger] IDurableActivityContext ctx, ILogger log)
         {
-            //log.LogInformation($"DurableInstanceId {context.InstanceId}");
+            log.LogInformation($"DurableInstanceId {ctx.InstanceId}");
+            var name = ctx.GetInput<string>();
+            Activity.Current.AddBaggage("CUSTOM-PROPERTY2", "MY VALUE");
             log.LogInformation($"Saying hello to {name}.");
             return $"Hello {name}!";
         }
