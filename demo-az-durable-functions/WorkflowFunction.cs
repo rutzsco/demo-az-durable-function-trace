@@ -30,12 +30,5 @@ namespace demo_az_durable_functions
             // returns ["Hello Tokyo!", "Hello Seattle!", "Hello London!"]
             return outputs;
         }
-
-        [FunctionName("HelloActivity")]
-        public static string SayHello([ActivityTrigger] string name, ILogger log)
-        {
-            log.LogInformation($"Saying hello to {name}.");
-            return $"Hello {name}!";
-        }
     }
 }
