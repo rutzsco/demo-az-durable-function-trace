@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
@@ -17,6 +18,9 @@ namespace demo_az_durable_functions
                                                                 ILogger log)
         {
             // Function input comes from the request content.
+
+            Activity.Current.AddTag("CUSTOM-PROPERTY", "MY VALUE");
+
             string instanceId = await starter.StartNewAsync("WorkflowFunction", null);
             log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
             return starter.CreateCheckStatusResponse(req, instanceId);
