@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
@@ -16,6 +17,7 @@ namespace demo_az_durable_functions
         {
             var outputs = new List<string>();
 
+            Activity.Current.AddTag("CUSTOM-PROPERTY", "MY VALUE");
             // Replace "hello" with the name of your Durable Activity Function.
             outputs.Add(await context.CallActivityAsync<string>("HelloActivity", "Tokyo"));
             outputs.Add(await context.CallActivityAsync<string>("HelloActivity", "Seattle"));
