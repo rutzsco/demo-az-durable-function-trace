@@ -18,6 +18,8 @@ namespace demo_az_durable_functions
             var outputs = new List<string>();
 
             Activity.Current.AddTag("CUSTOM-PROPERTY", "MY VALUE");
+            Activity.Current.AddBaggage("CUSTOM-PROPERTY2", "MY VALUE");
+
             log.LogInformation($"Running Workflow");
 
             // Replace "hello" with the name of your Durable Activity Function.
