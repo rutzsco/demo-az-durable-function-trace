@@ -13,11 +13,13 @@ namespace demo_az_durable_functions
     public static class WorkflowFunction
     {
         [FunctionName("WorkflowFunction")]
-        public static async Task<List<string>> RunOrchestrator([OrchestrationTrigger] IDurableOrchestrationContext context)
+        public static async Task<List<string>> RunOrchestrator([OrchestrationTrigger] IDurableOrchestrationContext context, ILogger log)
         {
             var outputs = new List<string>();
 
             Activity.Current.AddTag("CUSTOM-PROPERTY", "MY VALUE");
+            log.LogInformation($"Running Workflow");
+
             // Replace "hello" with the name of your Durable Activity Function.
             outputs.Add(await context.CallActivityAsync<string>("HelloActivity", "Tokyo"));
             outputs.Add(await context.CallActivityAsync<string>("HelloActivity", "Seattle"));
